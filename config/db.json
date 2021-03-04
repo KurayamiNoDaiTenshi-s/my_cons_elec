@@ -1,0 +1,9 @@
+{
+    "dev":{
+        "host":"localhost",
+        "username":"postgres",
+        "password":"my_password",
+        "port":5432,
+        "database":"my_cons_elec"
+    }
+}
