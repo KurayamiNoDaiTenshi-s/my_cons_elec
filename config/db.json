@@ -1,9 +1,4 @@
 {
-    "dev":{
-        "host":"localhost",
-        "username":"postgres",
-        "password":"my_password",
-        "port":5432,
-        "database":"my_cons_elec"
-    }
+    "KONJIKI01":"postgres://postgres:xQH1m!96c2Rx@localhost:5432/postgres",
+    "defaultDevEnv": "postgres://postgres:postgresPwd@localhost:5432/postgres"
 }
