@@ -1,4 +1,5 @@
 {
     "KONJIKI01":"postgres://postgres:xQH1m!96c2Rx@localhost:5432/postgres",
+    "INF-DEV-02": "postgres://postgres:p057gr35D8P455W0Rd@localhost:5434/postgres",
     "defaultDevEnv": "postgres://postgres:postgresPwd@localhost:5432/postgres"
 }
