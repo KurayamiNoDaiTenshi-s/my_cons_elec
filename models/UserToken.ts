@@ -66,7 +66,7 @@ export class UserToken extends Model {
         field: 'updated_by',
         allowNull: true
     })
-    updatedBy: Date;
+    updatedBy: string;
 
 
 }
