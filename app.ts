@@ -13,6 +13,7 @@ if (devEnv === null) {
     devEnv = 'defaultDevEnv';
 }
 const sequelize = new Sequelize(dbConfig[devEnv]);
+sequelize.addModels([__dirname+'/models/*.ts'])
 // mongoose.connect('mongodb+srv://learn-expressjs:BORbY6H68uA8LvWb@tuto-express-mongodb.mzjeg.mongodb.net/test?retryWrites=true&w=majority')
 //     .then(() => console.log('MongoDb connection success'))
 //     .catch(() => console.log('MongoDb connection failed'));
