@@ -1,13 +1,17 @@
-import {Table, Model, PrimaryKey, Column, DataType, Unique} from "sequelize-typescript";
+import {Column, DataType, Model, Table, Unique} from "sequelize-typescript";
 
 @Table({
-    tableName: 'user-token',
-    timestamps: false
+    tableName: 'user_token',
+    timestamps: false,
+    schema: 'my_cons_elec'
 })
 
 export class UserToken extends Model {
-    @PrimaryKey
-    @Column(DataType.INTEGER)
+    @Column({
+        type: DataType.INTEGER,
+        primaryKey: true,
+        autoIncrement:true
+    })
     uid: number
     @Unique
     @Column({
@@ -25,7 +29,8 @@ export class UserToken extends Model {
     @Column({
         type: DataType.BOOLEAN,
         field: 'is_used',
-        allowNull: false
+        allowNull: false,
+        defaultValue: false
     })
     isUsed: boolean;
     @Column({
@@ -37,7 +42,8 @@ export class UserToken extends Model {
     @Column({
         type: DataType.DATE,
         field: 'created_at',
-        allowNull: false
+        allowNull: false,
+        defaultValue: new Date()
     })
     createdAt: Date;
 
@@ -50,15 +56,15 @@ export class UserToken extends Model {
 
     @Column({
         type: DataType.DATE,
-        field: 'created_at',
-        allowNull: false
+        field: 'updated_at',
+        allowNull: true
     })
     updatedAt: Date;
 
     @Column({
         type: DataType.STRING,
-        field: 'created_by',
-        allowNull: false
+        field: 'updated_by',
+        allowNull: true
     })
     updatedBy: Date;
 
