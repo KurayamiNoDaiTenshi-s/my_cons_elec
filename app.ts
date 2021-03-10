@@ -3,6 +3,8 @@ import * as bodyParser from 'body-parser';
 import {Sequelize} from 'sequelize-typescript';
 import * as path from 'path';
 import * as dbConfig from './config/db.json';
+import {UserToken} from "./models/UserToken";
+import {User} from "./models/User";
 
 // import {router as stuffRoutes} from "./routes/stuff";
 // import {router as userRoutes} from './routes/user';
@@ -13,7 +15,32 @@ if (devEnv === null) {
     devEnv = 'defaultDevEnv';
 }
 const sequelize = new Sequelize(dbConfig[devEnv]);
-sequelize.addModels([__dirname+'/models/*.ts'])
+sequelize.addModels([__dirname + '/models/*.ts'])
+UserToken.findOne({where: {tokenString: 'tototiti'}}).then(token => {
+    if (token === null) {
+        let token = new UserToken({tokenString: 'tototiti', createdBy: 'SYS_ADM'});
+        token.save();
+        console.log('creating token....')
+    } else {
+        console.log('token already exist skipping creation...')
+    }
+});
+User.findOne({where: {email: 'angelo.basso.pro@gmail.com'}}).then(user => {
+    if (user === null) {
+        let user = new User({
+            firstName: 'AngelO',
+            lastName: 'BASSo',
+            email: 'angelo.basso.pro@gmail.com',
+            password: 'tititututoto',
+            userTokenUid: 1,
+            createdBy: 'SYS_ADM'
+        })
+        user.save();
+        console.log('creating user...')
+    } else {
+        console.log('user exist skipping creation...')
+    }
+})
 // mongoose.connect('mongodb+srv://learn-expressjs:BORbY6H68uA8LvWb@tuto-express-mongodb.mzjeg.mongodb.net/test?retryWrites=true&w=majority')
 //     .then(() => console.log('MongoDb connection success'))
 //     .catch(() => console.log('MongoDb connection failed'));
