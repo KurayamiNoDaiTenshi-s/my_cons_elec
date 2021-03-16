@@ -3,7 +3,8 @@ import {Column, DataType, Model, Table, Unique} from "sequelize-typescript";
 @Table({
     tableName: 'user_token',
     timestamps: false,
-    schema: 'my_cons_elec'
+    schema: 'my_cons_elec',
+    underscored:true
 })
 
 export class UserToken extends Model {
@@ -16,32 +17,21 @@ export class UserToken extends Model {
     @Unique
     @Column({
         type: DataType.STRING,
-        field: 'token_string',
         allowNull: false
     })
     tokenString: string;
-    @Column({
-        type: DataType.DATE,
-        field: 'validity_date',
-        allowNull: true
-    })
+    @Column(DataType.DATE)
     validityDate: Date;
     @Column({
         type: DataType.BOOLEAN,
-        field: 'is_used',
         allowNull: false,
         defaultValue: false
     })
     isUsed: boolean;
-    @Column({
-        type: DataType.DATE,
-        field: 'use_date',
-        allowNull: true,
-    })
+    @Column(DataType.DATE)
     useDate: Date;
     @Column({
         type: DataType.DATE,
-        field: 'created_at',
         allowNull: false,
         defaultValue: new Date()
     })
@@ -49,23 +39,14 @@ export class UserToken extends Model {
 
     @Column({
         type: DataType.STRING,
-        field: 'created_by',
         allowNull: false
     })
     createdBy: Date;
 
-    @Column({
-        type: DataType.DATE,
-        field: 'updated_at',
-        allowNull: true
-    })
+    @Column(DataType.DATE)
     updatedAt: Date;
 
-    @Column({
-        type: DataType.STRING,
-        field: 'updated_by',
-        allowNull: true
-    })
+    @Column(DataType.STRING)
     updatedBy: string;
 
 
