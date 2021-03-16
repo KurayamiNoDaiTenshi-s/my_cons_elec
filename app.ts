@@ -6,9 +6,7 @@ import * as _ from 'lodash';
 import * as dbConfig from './config/db.json';
 import {Parameter} from "./models/Parameter";
 
-// import {router as stuffRoutes} from "./routes/stuff";
-// import {router as userRoutes} from './routes/user';
-// let sequelize = new Sequelize(dbConfig["dev"])
+import {router as userTokenRoutes} from "./routes/userToken";
 let devEnv: string = process.env.node_dev_env;
 if (devEnv === null) {
     console.log('No specific dev environment configuration set/found switching to default');
@@ -62,6 +60,6 @@ app.use((req, res, next) => {
 });
 app.use(bodyParser.json());
 // app.use('/images', express.static(path.join(__dirname, 'images')))
-// app.use('/api/stuff',stuffRoutes)
+app.use('/api/userToken',userTokenRoutes);
 // app.use('/api/auth',userRoutes)
 export {app}
