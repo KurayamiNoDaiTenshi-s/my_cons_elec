@@ -52,28 +52,3 @@ export function inviteNewUser(req, res) {
     })
 
 }
-
-export function testNodeMailer(req, res) {
-    const transporter = req.app.get('nodemailerTransporter');
-    const accessToken = req.app.get('googleOAuth2AccessToken');
-    const refreshToken = req.app.get('googleOAuth2RefreshToken');
-    const user = req.app.get('googleOAuth2User');
-    const userDisplayName = req.app.get('googleOAuth2UserDisplayName');
-    transporter.sendMail({
-        from: `${userDisplayName} <${user}>`,
-        to: 'angelo67170@gmail.com',
-        subject: 'Test message',
-        text: 'test mail',
-        auth: {
-            user: user,
-            accessToken: accessToken.access_token,
-            refreshToken: refreshToken,
-            expires: accessToken.expiry_date
-        }
-    }).then(() => {
-        res.status(200).json({message: 'mail send successfully'})
-    }).catch(err => {
-        console.log(err);
-        res.status(400).json({err})
-    })
-}
