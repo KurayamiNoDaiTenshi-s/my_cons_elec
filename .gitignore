@@ -2,3 +2,4 @@ node_modules
 *.js
 *.js.map
 .idea
+/config/code_secret_client_id.json
