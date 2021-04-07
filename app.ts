@@ -1,57 +1,68 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import {Sequelize} from 'sequelize-typescript';
-import * as path from 'path';
 import * as _ from 'lodash';
 import * as dbConfig from './config/db.json';
+import * as envs from './config/env.json';
+import * as nodemailerConfFile from './config/nodemailer.json';
 import {Parameter} from "./models/Parameter";
+import * as nodemailer from 'nodemailer';
+import * as fs from 'fs-extra';
+import {google} from 'googleapis';
 
+const OAuth2 = google.auth.OAuth2;
 import {router as userTokenRoutes} from "./routes/userToken";
-let devEnv: string = process.env.node_dev_env;
-if (devEnv === null) {
-    console.log('No specific dev environment configuration set/found switching to default');
-    devEnv = 'defaultDevEnv';
+import {router as userRoutes} from "./routes/user";
+
+let runningEnv: string = process.env.node_dev_env;
+if (runningEnv === null) {
+    console.log('No specific environment configuration set/found switching to default');
+    runningEnv = 'defaultDevEnv';
 }
 const app = express();
-const sequelize = new Sequelize(dbConfig[devEnv]);
+const env = envs[runningEnv];
+app.set('env',env);
+const sequelize = new Sequelize(dbConfig[runningEnv]);
 sequelize.addModels([__dirname + '/models/*.ts'])
-Parameter.findAll({mapToModel:true}).then(parameters=>{
+Parameter.findAll({mapToModel: true}).then(parameters => {
     const parameterMap = new Map();
-    _.forEach(parameters,parameter=>{
-        parameterMap.set(parameter.key,parameter.value)
+    _.forEach(parameters, parameter => {
+        parameterMap.set(parameter.key, parameter.value)
     })
-    app.set('parameters',parameterMap);
-}).catch(err=>{
+    app.set('parameters', parameterMap);
+}).catch(err => {
     console.log(`Error while trying to fetch the parameter table in the database : ${err}`)
 })
-/*UserToken.findOne({where: {tokenString: 'tototiti'}}).then(token => {
-    if (token === null) {
-        let token = new UserToken({tokenString: 'tototiti', createdBy: 'SYS_ADM'});
-        token.save();
-        console.log('creating token....')
-    } else {
-        console.log('token already exist skipping creation...')
+const nodemailerConf = nodemailerConfFile[runningEnv];
+let googleApisInfo = JSON.parse(fs.readFileSync(nodemailerConf.auth.pathToClientIdSecret).toString());
+const oAuth2 = new OAuth2(
+    googleApisInfo.clientId,
+    googleApisInfo.clientSecret,
+    "https://developers.google.com/oauthplayground"
+)
+app.set("googleOAuth2RefreshToken", googleApisInfo.refreshToken);
+app.set("googleOAuth2User", googleApisInfo.user);
+app.set("googleOAuth2UserDisplayName", googleApisInfo.userDisplayName);
+oAuth2.setCredentials({
+    refresh_token: googleApisInfo.refreshToken,
+});
+oAuth2.getAccessToken().then(accessToken => {
+    app.set("googleOAuth2AccessToken", accessToken.res.data);
+    oAuth2.on("tokens", token => {
+        console.log(token);
+        app.set("googleOAuth2AccessToken", token);
+    });
+});
+app.set('googleOAuth2', oAuth2);
+const nodemailerTransporter = nodemailer.createTransport({
+    service:'gmail',
+    auth: {
+        type: nodemailerConf.auth.type,
+        clientId: googleApisInfo.clientId,
+        clientSecret: googleApisInfo.clientSecret,
     }
 });
-User.findOne({where: {email: 'angelo.basso.pro@gmail.com'}}).then(user => {
-    if (user === null) {
-        let user = new User({
-            firstName: 'AngelO',
-            lastName: 'BASSo',
-            email: 'angelo.basso.pro@gmail.com',
-            password: 'tititututoto',
-            userTokenUid: 1,
-            createdBy: 'SYS_ADM'
-        })
-        user.save();
-        console.log('creating user...')
-    } else {
-        console.log('user exist skipping creation...')
-    }
-})*/
-// mongoose.connect('mongodb+srv://learn-expressjs:BORbY6H68uA8LvWb@tuto-express-mongodb.mzjeg.mongodb.net/test?retryWrites=true&w=majority')
-//     .then(() => console.log('MongoDb connection success'))
-//     .catch(() => console.log('MongoDb connection failed'));
+app.set('nodemailerTransporter', nodemailerTransporter);
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -59,7 +70,6 @@ app.use((req, res, next) => {
     next();
 });
 app.use(bodyParser.json());
-// app.use('/images', express.static(path.join(__dirname, 'images')))
-app.use('/api/userToken',userTokenRoutes);
-// app.use('/api/auth',userRoutes)
+app.use('/api/userToken', userTokenRoutes);
+app.use('/api/users', userRoutes);
 export {app}
