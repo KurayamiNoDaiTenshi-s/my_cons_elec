@@ -1,6 +1,10 @@
 import validator from "validator";
 import {User} from '../models/User'
-import {generateToken} from './userToken';
+import {default as axios} from 'axios';
+
+async function generateToken() {
+    return await axios.request({baseURL: 'http://localhost:3000/api/userToken/generate', method: 'post'});
+}
 
 export function inviteNewUser(req, res) {
     if (!req.body.email) {
@@ -15,16 +19,14 @@ export function inviteNewUser(req, res) {
         if (user instanceof User && false) {
             res.status(400).json({'error': `cannot invite user with email ${email} because this email is already used`});
         }
-        const tokenSaltRound = parseInt(res.app.get('parameters').get('TOKEN_SALT_ROUND'));
-        const tokenSalt = res.app.get('parameters').get('TOKEN_SALT');
-        generateToken(tokenSalt, tokenSaltRound).then(token => {
+        generateToken().then(response => {
             const transporter = req.app.get('nodemailerTransporter');
             const accessToken = req.app.get('googleOAuth2AccessToken');
             const refreshToken = req.app.get('googleOAuth2RefreshToken');
             const user = req.app.get('googleOAuth2User');
             const userDisplayName = req.app.get('googleOAuth2UserDisplayName');
             const env = req.app.get('env');
-            let link = `${env.frontAppBaseUrl}/signup/${token}`
+            let link = `${env.frontAppBaseUrl}/signup/${response.data.token}`
             transporter.sendMail({
                 from: `${userDisplayName} <${user}>`,
                 to: email,
