@@ -13,7 +13,6 @@ export function getToken(req, res) {
     generateToken(tokenSalt, tokenSaltRound).then(token => {
             new UserToken({tokenString: token, createdBy: 'SYS_ADM'}).save().then(dbUserToken => {
                 const base64Token = Buffer.from(dbUserToken.tokenString, 'utf8').toString('base64')
-                console.log(base64Token);
                 res.status(201).json({message: 'Generation ok...', token: base64Token});
             })
         }
