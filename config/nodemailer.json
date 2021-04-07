@@ -1,0 +1,8 @@
+{
+  "KONJIKI01": {
+    "auth": {
+      "type": "OAuth2",
+      "pathToClientIdSecret": "./config/code_secret_client_id.json"
+    }
+  }
+}
