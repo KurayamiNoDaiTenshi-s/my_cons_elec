@@ -1,0 +1,86 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/object1617820620.json",
+  "title": "Root",
+  "type": "object",
+  "required": [
+    "firstname",
+    "lastname",
+    "password",
+    "email",
+    "token",
+    "isAdmin",
+    "canInvite"
+  ],
+  "properties": {
+    "firstname": {
+      "$id": "#root/firstname",
+      "title": "Firstname",
+      "type": "string",
+      "default": "",
+      "examples": [
+        "toto"
+      ],
+      "pattern": "^.{2,}$"
+    },
+    "lastname": {
+      "$id": "#root/lastname",
+      "title": "Lastname",
+      "type": "string",
+      "default": "",
+      "examples": [
+        "titi"
+      ],
+      "pattern": "^.{2,}$"
+    },
+    "password": {
+      "$id": "#root/password",
+      "title": "Password",
+      "type": "string",
+      "default": "",
+      "examples": [
+        "$2a$10$6kyWXQSKo8NFmuzXh0OV2O6LhsFffEkXUsGcsdfDRsmJVw3vT7UOm"
+      ],
+      "pattern": "^.*$"
+    },
+    "email": {
+      "$id": "#root/email",
+      "title": "Email",
+      "type": "string",
+      "default": "",
+      "examples": [
+        "toto.titi@tutu.fr"
+      ],
+      "pattern": "^[a-zA-Z0-9._-]{2,}@[a-zA-Z0-9-_]{2,}\\.[a-zA-Z]{2,}$"
+    },
+    "token": {
+      "$id": "#root/token",
+      "title": "Token",
+      "type": "string",
+      "default": "",
+      "examples": [
+        "JDJiJDEwJGR3LjV3UTNwTDRSdWE2MzM5M1QvMnVGV2NiRnlNb1p0RURENFdUTy5oT1UyNTBlZW4xNm8u"
+      ],
+      "pattern": "^.*$"
+    },
+    "isAdmin": {
+      "$id": "#root/is_admin",
+      "title": "IsAdmin",
+      "type": "boolean",
+      "examples": [
+        false
+      ],
+      "default": false
+    },
+    "canInvite": {
+      "$id": "#root/can_invite",
+      "title": "CanInvite",
+      "type": "boolean",
+      "examples": [
+        false
+      ],
+      "default": false
+    }
+  }
+}

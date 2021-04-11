@@ -1,12 +1,17 @@
 import validator from "validator";
 import {User} from '../models/User'
 import {default as axios} from 'axios';
+import * as addUserSchemaValidator from '../ajv-validator-schema/addUser.json'
+import Ajv from "ajv";
+import * as _ from 'lodash';
+
+const ajv = new Ajv({allErrors: true});
 
 async function generateToken() {
     return await axios.request({baseURL: 'http://localhost:3000/api/userToken/generate', method: 'post'});
 }
 
-export function inviteNewUser(req, res) {
+export function invite(req, res) {
     if (!req.body.email) {
         res.status(400).json({'error': `missing 'email' property `});
     }
@@ -50,5 +55,49 @@ export function inviteNewUser(req, res) {
             })
         });
     })
+
+}
+
+export function create(req, res) {
+    const schemaValidator = ajv.compile(addUserSchemaValidator);
+    let newUserData = req.body;
+    const valid = schemaValidator(newUserData);
+    if (!valid) {
+        let errMsg = '';
+        const errors = schemaValidator.errors;
+        const missingProperties = _.flatMap(_.filter(errors, error => {
+            return error.keyword === 'required'
+        }), mpError => {
+            return mpError.params.missingProperty
+        })
+        const invalidValuesProperties = _.flatMap(_.filter(errors, error => {
+            return error.keyword === 'pattern'
+        }), pMError => {
+            return pMError.instancePath.substr(1)
+        })
+        console.log(invalidValuesProperties);
+
+        const invalidTypeProperties = _.flatMap(_.filter(errors, error => {
+            return error.keyword === 'type'
+        }), tError => {
+            let errInfo = {};
+            errInfo['pName']= tError.instancePath.substr(1);
+            errInfo['pExpectedType'] = tError.params.type;
+            return errInfo;
+        })
+        console.log(invalidTypeProperties);
+        
+        if(missingProperties.length > 0){
+            if(missingProperties.length === 1){
+                errMsg += `The property ${missingProperties[0]} was required but wasn't`
+            }else{
+                errMsg += `The properties ${missingProperties} where required but none of theme where`
+            }
+            errMsg += ' found inside the request body'
+        }
+        res.status(400).json({message:errMsg});
+    } else {
+        res.status(201).json({message: 'User successfully created'});
+    }
 
 }
