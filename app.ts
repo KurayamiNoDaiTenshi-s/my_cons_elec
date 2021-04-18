@@ -14,7 +14,7 @@ const OAuth2 = google.auth.OAuth2;
 import {router as userTokenRoutes} from "./routes/userToken";
 import {router as userRoutes} from "./routes/user";
 
-let runningEnv: string = process.env.node_dev_env;
+let runningEnv: string = process.env.eca_running_env;
 if (runningEnv === null) {
     console.log('No specific environment configuration set/found switching to default');
     runningEnv = 'defaultDevEnv';
