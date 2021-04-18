@@ -12,6 +12,7 @@ async function generateToken() {
 }
 
 export function invite(req, res) {
+    const env = req.app.get('env');
     if (!req.body.email) {
         res.status(400).json({'error': `missing 'email' property `});
     }
@@ -21,7 +22,7 @@ export function invite(req, res) {
     }
     User.findOne({where: {"email": email}}).then(user => {
         //TODO:supprimer le test false empéchant l'éxécution du code de vérification d'unicité des mails
-        if (user instanceof User && false) {
+        if (user instanceof User && env.isProdEnv) {
             res.status(400).json({'error': `cannot invite user with email ${email} because this email is already used`});
         }
         generateToken().then(response => {
@@ -30,7 +31,6 @@ export function invite(req, res) {
             const refreshToken = req.app.get('googleOAuth2RefreshToken');
             const user = req.app.get('googleOAuth2User');
             const userDisplayName = req.app.get('googleOAuth2UserDisplayName');
-            const env = req.app.get('env');
             let link = `${env.frontAppBaseUrl}/signup/${response.data.token}`
             transporter.sendMail({
                 from: `${userDisplayName} <${user}>`,
