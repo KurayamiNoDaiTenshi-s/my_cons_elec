@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import {UserToken} from "../models/UserToken";
 import {ResourceNotFoundError} from "../customError/ResourceNotFoundError";
-import { QueryTypes } from 'sequelize';
+import {QueryTypes, Op} from 'sequelize';
 
 export function generateToken(tokenSalt: string, tokenSaltRound: number): Promise<string> {
     return bcrypt.hash(`${tokenSalt}_${new Date().toISOString()}`, tokenSaltRound);
@@ -23,16 +23,20 @@ export function getToken(req, res) {
 
 }
 
-export function checkToken(req): Promise<UserToken> {
-    return new Promise<UserToken>((resolve, reject) => {
-        let decodedToken = Buffer.from(req.body.token, 'base64').toString('utf8');
-        UserToken.findOne({where: {isUsed: false, tokenString: decodedToken}}).then(userToken => {
-            if (userToken !== null && userToken instanceof UserToken) {
-                resolve(userToken);
-            } else {
-                reject(new ResourceNotFoundError('Invalid token'));
-            }
-        });
+export function checkToken(req, res) {
+    const decodedToken = Buffer.from(req.body.token, 'base64').toString('utf8');
+    UserToken.findOne({
+        where: {
+            isUsed: false,
+            tokenString: decodedToken,
+            validityDate: {[Op.or]: {[Op.gte]: new Date(), [Op.is]: null}}
+        }
+    }).then(userToken => {
+        if (userToken !== null && userToken instanceof UserToken) {
+            res.status(200).json({userTokenUid: userToken.uid});
+        } else {
+            res.status(400).send(new ResourceNotFoundError('Invalid token'));
+        }
     })
 }
 

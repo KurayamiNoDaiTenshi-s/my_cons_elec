@@ -36,7 +36,8 @@ CREATE TABLE IF NOT EXISTS my_cons_elec.user
     updated_by        VARCHAR(255),
     CONSTRAINT pk_user PRIMARY KEY (uid),
     CONSTRAINT ui1_user UNIQUE (unique_identifier),
-    CONSTRAINT ui2_user UNIQUE (email)
+    CONSTRAINT ui2_user UNIQUE (email),
+    CONSTRAINT ui3_user UNIQUE (user_token_uid)
 );
 
 DROP TABLE IF EXISTS my_cons_elec.electric_consumption CASCADE;

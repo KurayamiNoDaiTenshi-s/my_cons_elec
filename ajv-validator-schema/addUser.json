@@ -5,8 +5,8 @@
   "title": "Root",
   "type": "object",
   "required": [
-    "firstname",
-    "lastname",
+    "firstName",
+    "lastName",
     "password",
     "email",
     "token",
@@ -14,9 +14,9 @@
     "canInvite"
   ],
   "properties": {
-    "firstname": {
-      "$id": "#root/firstname",
-      "title": "Firstname",
+    "firstName": {
+      "$id": "#root/firstName",
+      "title": "firstName",
       "type": "string",
       "default": "",
       "examples": [
@@ -24,9 +24,9 @@
       ],
       "pattern": "^.{2,}$"
     },
-    "lastname": {
-      "$id": "#root/lastname",
-      "title": "Lastname",
+    "lastName": {
+      "$id": "#root/lastName",
+      "title": "lastName",
       "type": "string",
       "default": "",
       "examples": [
