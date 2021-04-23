@@ -59,5 +59,7 @@ CREATE TABLE IF NOT EXISTS my_cons_elec.parameter
 (
     key   VARCHAR(255) NOT NULL,
     value VARCHAR(255) NOT NULL,
-    CONSTRAINT pk_parameter PRIMARY KEY (key)
+    type  VARCHAR(5)   NOT NULL,
+    CONSTRAINT pk_parameter PRIMARY KEY (key),
+    CONSTRAINT ck_parameter_type CHECK ( type IN ('back', 'front') )
 )

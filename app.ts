@@ -24,7 +24,7 @@ const env = envs[runningEnv];
 app.set('env',env);
 const sequelize = new Sequelize(dbConfig[runningEnv]);
 sequelize.addModels([__dirname + '/models/*.ts'])
-Parameter.findAll({mapToModel: true}).then(parameters => {
+Parameter.findAll({mapToModel: true,where:{type:'back'}}).then(parameters => {
     const parameterMap = new Map();
     _.forEach(parameters, parameter => {
         parameterMap.set(parameter.key, parameter.value)
