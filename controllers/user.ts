@@ -21,6 +21,14 @@ async function checkToken(encodedToken: string) {
     })
 }
 
+async function setTokenIsUsed(encodedToken: string) {
+    return await axios.request({
+        baseURL: 'http://localhost:3000/api/userToken/setUsed',
+        method: 'put',
+        data: {token: encodedToken}
+    })
+}
+
 export function invite(req, res) {
     const env = req.app.get('env');
     if (!req.body.email) {
@@ -85,14 +93,12 @@ export function create(req, res) {
         }), pMError => {
             return pMError.instancePath.substr(1)
         })
-        console.log(invalidValuesProperties);
 
         const invalidTypeProperties = _.flatMap(_.filter(errors, error => {
             return error.keyword === 'type'
         }), tError => {
             return `Unexpected type for property ${tError.instancePath.substr(1)}, '${tError.params.type}' type was expected.`
         })
-        console.log(invalidTypeProperties);
         let i = 0;
         if (missingProperties.length > 0) {
             if (missingProperties.length === 1) {
@@ -126,14 +132,19 @@ export function create(req, res) {
         checkToken(newUserData.token).then(response => {
             const newUser = User.build({...newUserData, ...response.data,createdBy:"SYS_ADM"})
             newUser.save().then(result=>{
-                console.log(result);
-                res.status(201).json({message: 'User successfully created'});
+                setTokenIsUsed(newUserData.token).then(()=>{
+                    console.log(result);
+                    res.status(201).json({message: 'User successfully created'});
+                })
             }).catch(()=>{
                 res.status(400).json({message:'User creation failed'})
             })
-        }).catch(err => {
-            if (err.response.data.name === 'ResourceNotFoundError') {
+        }).catch(request => {
+            const err = request.response.data;
+            if (err.name === 'ResourceNotFoundError') {
                 res.status(400).json({message: 'invalid or expired token'})
+            }else{
+
             }
         })
     }

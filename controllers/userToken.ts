@@ -8,8 +8,9 @@ export function generateToken(tokenSalt: string, tokenSaltRound: number): Promis
 }
 
 export function getToken(req, res) {
-    const tokenSaltRound = parseInt(res.app.get('parameters').get('TOKEN_SALT_ROUND'));
-    const tokenSalt = res.app.get('parameters').get('TOKEN_SALT');
+    const parameters = res.app.get('parameters');
+    const tokenSaltRound = parseInt(parameters.get('TOKEN_SALT_ROUND'));
+    const tokenSalt = parameters.get('TOKEN_SALT');
     generateToken(tokenSalt, tokenSaltRound).then(token => {
             new UserToken({tokenString: token, createdBy: 'SYS_ADM'}).save().then(dbUserToken => {
                 const base64Token = Buffer.from(dbUserToken.tokenString, 'utf8').toString('base64')
@@ -57,7 +58,7 @@ export function deleteToken(req, res) {
     })
 }
 
-export function setTokenUsed(req): Promise<any> {
+export function setTokenUsed(req, res) {
     let decodedToken = Buffer.from(req.body.token, 'base64').toString('utf8');
     return UserToken.sequelize.query('UPDATE my_cons_elec.user_token SET is_used = true, updated_at = :updatedAt, updated_by = :updatedBy WHERE token_string = :decodedToken', {
         replacements: {
@@ -65,5 +66,9 @@ export function setTokenUsed(req): Promise<any> {
             updatedAt: new Date(),
             updatedBy: 'SYS_ADM'
         }
+    }).then(() => {
+        res.status(200).json({message: 'token successfully updated'})
+    }).catch(err => {
+        res.status(400).json({message: err.message})
     })
 }
